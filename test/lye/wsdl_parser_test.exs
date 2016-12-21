@@ -64,31 +64,27 @@ defmodule Lye.WSDLParserTest do
     expected = [%Operation{name: "get_measurements",
       input_message: "get_measurements",
       output_message: "get_measurementsResponse",
-      style: "document"}]
+      }]
     assert wsdl.port_type.operations === expected
   end
 
   test "parses WSDL with multiple operations", context do
     {:ok, wsdl} = parse(context[:article])
-    expected = [
+    expected = MapSet.new([
       %Operation{name: "create",
       input_message: "createRequest",
-      output_message: "createResponse",
-      style: "document"},
+      output_message: "createResponse"
+      },
       %Operation{name: "get",
       input_message: "getRequest",
       output_message: "getResponse",
-      style: "document"},
-      %Operation{name: "getAll",
-      input_message: "getAllRequest",
-      output_message: "getAllResponse",
-      style: "document"},
+      },
       %Operation{name: "delete",
       input_message: "deleteRequest",
       output_message: "deleteResponse",
-      style: "document"},
-    ]
-    assert wsdl.port_type.operations === expected
+      },
+    ])
+    assert MapSet.new(wsdl.port_type.operations) === expected
   end
 
   test "return error if no eligable port was found", context do
