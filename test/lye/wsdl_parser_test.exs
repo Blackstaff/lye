@@ -3,7 +3,7 @@ defmodule Lye.WSDLParserTest do
 
   import Lye.WSDLParser
 
-  alias Lye.WSDLParser.{Binding, Operation, Port}
+  alias Lye.WSDLParser.{Binding, Operation, Port, Parameter}
 
   @fixture_path "test/fixtures/wsdl"
 
@@ -85,6 +85,15 @@ defmodule Lye.WSDLParserTest do
       },
     ])
     assert MapSet.new(wsdl.port_type.operations) === expected
+  end
+
+  test "parses names of operations' input parameters", context do
+    {:ok, wsdl} = parse(context[:measurement])
+    expected = %{"get_measurements": [%Parameter{name: "measurement_type"},
+      %Parameter{name: "from_datetime"},
+      %Parameter{name: "to_datetime"}
+    ]}
+    assert wsdl.parameters === expected
   end
 
   test "return error if no eligable port was found", context do
