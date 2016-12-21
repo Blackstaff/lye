@@ -3,7 +3,7 @@ defmodule Lye.WSDLParserTest do
 
   import Lye.WSDLParser
 
-  alias Lye.WSDLParser.{Binding, Operation}
+  alias Lye.WSDLParser.{Binding, Operation, Port}
 
   @fixture_path "test/fixtures/wsdl"
 
@@ -27,26 +27,36 @@ defmodule Lye.WSDLParserTest do
 
   test "parses file with single SOAP 1.1 binding", context do
     {:ok, wsdl} = parse(context[:measurement])
-    expected = %Binding{
+    expected_port = %Port{
+      name: "MeasurementService",
+      binding: "MeasurementService",
+      address: "http://jpmaergk.p50.weaved.com/soap/measurement_service"
+    }
+    expected_binding = %Binding{
       name: "MeasurementService",
       port_type: "MeasurementService",
       style: "document",
-      transport: "http://schemas.xmlsoap.org/soap/http",
-      protocol: :soap11
+      transport: "http://schemas.xmlsoap.org/soap/http"
     }
-    assert wsdl.binding === expected
+    assert wsdl.service.port === expected_port
+    assert wsdl.binding === expected_binding
   end
 
   test "parses file with multiple bindings (one of which is SOAP 1.1)", context do
     {:ok, wsdl} = parse(context[:blz])
-    expected = %Binding{
+    expected_port = %Port{
+      name: "BLZServiceSOAP11port_http",
+      binding: "BLZServiceSOAP11Binding",
+      address: "http://www.thomas-bayer.com:80/axis2/services/BLZService",
+    }
+    expected_binding = %Binding{
       name: "BLZServiceSOAP11Binding",
       port_type: "BLZServicePortType",
       style: "document",
-      transport: "http://schemas.xmlsoap.org/soap/http",
-      protocol: :soap11
+      transport: "http://schemas.xmlsoap.org/soap/http"
     }
-    assert wsdl.binding === expected
+    assert wsdl.service.port === expected_port
+    assert wsdl.binding === expected_binding
   end
 
   test "parses WSDL with single operation", context do
@@ -78,7 +88,7 @@ defmodule Lye.WSDLParserTest do
       output_message: "deleteResponse",
       style: "document"},
     ]
-    assert wsdl === expected
+    assert wsdl.port_type.operations === expected
   end
 
   test "return error if no eligable port was found", context do
@@ -90,7 +100,7 @@ defmodule Lye.WSDLParserTest do
   end
 
   test "returns error if multiple services were found", context do
-    assert parse(context[:multiple_services]) == {:error, "More than one service port was found"}
+    assert parse(context[:multiple_services]) == {:error, "More than one service was found"}
   end
 
   test "returns error if unsupported binding style was found", context do
