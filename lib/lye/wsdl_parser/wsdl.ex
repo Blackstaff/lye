@@ -1,24 +1,23 @@
 defmodule Lye.WSDLParser.WSDL do
-  defstruct [name: "", port_type: %Lye.WSDLParser.PortType{}, bindings: [], service: %Lye.WSDLParser.Service{}]
+  defstruct [port_type: nil, binding: nil, service: nil, types: %{}]
 end
 
 defmodule Lye.WSDLParser.PortType do
-  defstruct [name: "", operations: []]
+  defstruct [name: nil, operations: []]
 end
 
 defmodule Lye.WSDLParser.Binding do
-  defstruct [name: "", operations: [], protocol: nil, port_type: %Lye.WSDLParser.PortType{},
-    transport: nil, style: nil, encoding: nil, verb: nil]
+  defstruct [:name, :port_type, :transport, :style]
 end
 
 defmodule Lye.WSDLParser.Service do
-  defstruct [name: "", ports: []]
+  defstruct [:name, :port]
 end
 
 defmodule Lye.WSDLParser.Port do
-  defstruct [name: "", protocol: nil, binding: "", url: ""]
+  defstruct [:name, :binding, :address]
 end
 
 defmodule Lye.WSDLParser.Operation  do
-  defstruct [name: "", input: nil, output: nil]
+  defstruct [:name, :input_message, :output_message, :style]
 end
