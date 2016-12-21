@@ -1,13 +1,14 @@
 defmodule Lye.WSDLParser do
   import SweetXml
 
-  alias Lye.WSDLParser.{WSDL, Service, Port, Binding, Operation}
+  alias Lye.WSDLParser.{WSDL, Service, Port, Binding, PortType, Operation}
 
   def parse(description) do
     description
     |> SweetXml.parse()
     |> parse_service
     |> parse_binding(description)
+    |> parse_port_type(description)
   end
 
   defp add_to_wsdl(_, {:error, msg}, _), do: {:error, msg}
@@ -77,7 +78,27 @@ defmodule Lye.WSDLParser do
     |> add_to_wsdl(binding, :binding)
   end
 
-  defp parse_port_type(wsdl, raw_description) do
+  defp parse_port_type({:error, msg}, _), do: {:error, msg}
+  defp parse_port_type({:ok, wsdl}, raw_desc) do
+    port_type_name = wsdl.binding.port_type
+    operations = raw_desc
+    |> xpath(~x"//wsdl:portType[@name='#{port_type_name}']")
+    |> parse_operations
+
+    port_type = {:ok, %PortType{name: port_type_name, operations: operations}}
+    wsdl
+    |> add_to_wsdl(port_type, :port_type)
+  end
+
+  defp parse_operations(desc) do
+    desc
+    |> xpath(
+      ~x"./wsdl:operation"l,
+      name: ~x"./@name"s,
+      input_message: ~x"./wsdl:input/@message"s |> transform_by(&remove_namespace/1),
+      output_message: ~x"./wsdl:output/@message"s |> transform_by(&remove_namespace/1)
+    )
+    |> Enum.map(&( struct(Operation, &1) ))
   end
 
   defp remove_namespace(string), do: string |> String.replace(~r/\w*:/, "")
