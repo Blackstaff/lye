@@ -1,5 +1,5 @@
 defmodule Lye.WSDLParser.WSDL do
-  defstruct [port_type: nil, binding: nil, service: nil, types: %{}]
+  defstruct [port_type: nil, binding: nil, service: nil, tns: nil]
 end
 
 defmodule Lye.WSDLParser.PortType do

@@ -9,6 +9,7 @@ defmodule Lye.WSDLParser do
     |> parse_service
     |> parse_binding(description)
     |> parse_port_type(description)
+    |> parse_tns(description)
   end
 
   defp add_to_wsdl(_, {:error, msg}, _), do: {:error, msg}
@@ -58,7 +59,7 @@ defmodule Lye.WSDLParser do
   defp parse_binding({:ok, wsdl}, raw_desc) do
     check = fn
       (binding = %Binding{style: "document"}) -> {:ok, binding}
-      (binding = %Binding{style: style}) -> {:error, "Binding style not supported: #{style}"}
+      (%Binding{style: style}) -> {:error, "Binding style not supported: #{style}"}
     end
 
     binding_name = wsdl.service.port.binding
@@ -99,6 +100,15 @@ defmodule Lye.WSDLParser do
       output_message: ~x"./wsdl:output/@message"s |> transform_by(&remove_namespace/1)
     )
     |> Enum.map(&( struct(Operation, &1) ))
+  end
+
+  defp parse_tns({:error, msg}, _), do: {:error, msg}
+  defp parse_tns({:ok, wsdl}, raw_desc) do
+    tns = raw_desc
+    |> xpath(~x"//wsdl:types/xs:schema/@targetNamespace"s)
+
+    wsdl
+    |> add_to_wsdl({:ok, tns}, :tns)
   end
 
   defp remove_namespace(string), do: string |> String.replace(~r/\w*:/, "")
