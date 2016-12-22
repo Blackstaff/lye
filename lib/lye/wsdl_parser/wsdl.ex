@@ -19,5 +19,5 @@ defmodule Lye.WSDLParser.Port do
 end
 
 defmodule Lye.WSDLParser.Operation  do
-  defstruct [:name, :input_message, :output_message]
+  defstruct [:name, :input_message, :output_message, :action]
 end

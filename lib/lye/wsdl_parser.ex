@@ -85,6 +85,11 @@ defmodule Lye.WSDLParser do
     operations = raw_desc
     |> xpath(~x"//wsdl:portType[@name='#{port_type_name}']")
     |> parse_operations
+    |> Enum.map(fn(op) ->
+      action = raw_desc
+      |> xpath(~x"//wsdl:binding/wsdl:operation[@name='#{op.name}']/soap:operation/@soapAction"s)
+      struct(op, %{action: action})
+    end)
 
     port_type = {:ok, %PortType{name: port_type_name, operations: operations}}
     wsdl

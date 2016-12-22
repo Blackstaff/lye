@@ -64,6 +64,7 @@ defmodule Lye.WSDLParserTest do
     expected = [%Operation{name: "get_measurements",
       input_message: "get_measurements",
       output_message: "get_measurementsResponse",
+      action: "get_measurements"
       }]
     assert wsdl.port_type.operations === expected
   end
@@ -73,15 +74,18 @@ defmodule Lye.WSDLParserTest do
     expected = MapSet.new([
       %Operation{name: "create",
       input_message: "createRequest",
-      output_message: "createResponse"
+      output_message: "createResponse",
+      action: "create_action"
       },
       %Operation{name: "get",
       input_message: "getRequest",
       output_message: "getResponse",
+      action: "get_action"
       },
       %Operation{name: "delete",
       input_message: "deleteRequest",
       output_message: "deleteResponse",
+      action: "delete_action"
       },
     ])
     assert MapSet.new(wsdl.port_type.operations) === expected
