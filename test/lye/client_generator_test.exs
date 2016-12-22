@@ -1,4 +1,4 @@
-defmodule Lye.ClientGenerator do
+defmodule Lye.ClientGeneratorTest do
   use ExUnit.Case, async: true
 
   import Lye.ClientGenerator
