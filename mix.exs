@@ -30,7 +30,8 @@ defmodule Lye.Mixfile do
   defp deps do
     [
       {:sweet_xml, "~> 0.6.2"},
-      {:xml_builder, "~> 0.0.8"}
+      {:xml_builder, "~> 0.0.8"},
+      {:credo, "~> 0.3", only: [:dev, :test]}
     ]
   end
 end
