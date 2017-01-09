@@ -1,8 +1,17 @@
 defmodule Lye.WSDLParser do
+  @moduledoc """
+  Contains functions used in parsing of web service descriptions written
+  using WSDL.
+  """
+
   import SweetXml
 
   alias Lye.WSDLParser.{WSDL, Service, Port, Binding, PortType, Operation}
 
+  @doc """
+  Parses web service `description` written in WSDL into Elixir structs.
+  """
+  @spec parse(String.t) :: {:ok, WSDL.t} | {:error, String.t}
   def parse(description) do
     description
     |> SweetXml.parse()
@@ -12,11 +21,14 @@ defmodule Lye.WSDLParser do
     |> parse_tns(description)
   end
 
+  # @spec add_to_wsdl(WSDL.t, {:ok, any()} | {:error, String.t}, String.t) :: {:ok, WSDL.t} | {:error, String.t}
   defp add_to_wsdl(_, {:error, msg}, _), do: {:error, msg}
   defp add_to_wsdl(wsdl, {:ok, prop}, prop_name) do
     {:ok, wsdl |> struct(Map.new([{prop_name, prop}]))}
   end
 
+  # Parses service part of WSDL
+  # @spec parse_service(String.t) :: {:ok, WSDL.t} | {:error, String.t}
   defp parse_service(raw_desc) do
     check = fn
       ([service_name | []]) -> {:ok, service_name}
@@ -32,6 +44,8 @@ defmodule Lye.WSDLParser do
     |> add_to_wsdl(service, :service)
   end
 
+  # Parses Port part of WSDL
+  # @spec parse_port({:ok, String.t} | {:error, String.t}, String.t) :: {:ok, Service.t} | {:error, String.t}
   defp parse_port({:error, msg}, _), do: {:error, msg}
   defp parse_port({:ok, service_name}, raw_desc) do
     to_port = fn
@@ -52,9 +66,12 @@ defmodule Lye.WSDLParser do
     |> to_service(service_name)
   end
 
+  # @spec to_service({:ok, Port.t}, {:error, String.t}, String.t) :: {:ok, Service.t} | {:error, String.t}
   defp to_service({:error, msg}, _), do: {:error, msg}
   defp to_service({:ok, port}, name), do: {:ok, %Service{name: name, port: port}}
 
+  # Parses Binding part of WSDL
+  # @spec parse_binding({:ok, WSDL.t} | {:error, String.t}, String.t) :: {:ok, WSDL.t} | {:error, String.t}
   defp parse_binding({:error, msg}, _), do: {:error, msg}
   defp parse_binding({:ok, wsdl}, raw_desc) do
     check = fn
@@ -79,6 +96,8 @@ defmodule Lye.WSDLParser do
     |> add_to_wsdl(binding, :binding)
   end
 
+  # Parses Port Type part of WSDL
+  # @spec parse_port_type({:ok, WSDL.t} | {:error, String.t}, String.t) :: {:ok, WSDL.t} | {:error, String.t}
   defp parse_port_type({:error, msg}, _), do: {:error, msg}
   defp parse_port_type({:ok, wsdl}, raw_desc) do
     port_type_name = wsdl.binding.port_type
@@ -96,6 +115,8 @@ defmodule Lye.WSDLParser do
     |> add_to_wsdl(port_type, :port_type)
   end
 
+  # Parses defined Operations
+  # @spec parse_operations(String.t) :: list(Operation.t)
   defp parse_operations(desc) do
     desc
     |> xpath(
@@ -107,6 +128,8 @@ defmodule Lye.WSDLParser do
     |> Enum.map(&( struct(Operation, &1) ))
   end
 
+  # Finds target namespace of the XML document
+  # @spec parse_tns({:ok, WSDL.t} | {:error, String.t}, String.t) :: {:ok, WSDL.t} | {:error, String.t}
   defp parse_tns({:error, msg}, _), do: {:error, msg}
   defp parse_tns({:ok, wsdl}, raw_desc) do
     tns = raw_desc
