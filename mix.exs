@@ -31,7 +31,14 @@ defmodule Lye.Mixfile do
     [
       {:sweet_xml, "~> 0.6.2"},
       {:xml_builder, "~> 0.0.8"},
-      {:credo, "~> 0.3", only: [:dev, :test]}
+
+      # Docs dependencies
+      {:ex_doc, "~> 0.14", only: :docs},
+      {:inch_ex, "~> 0.5", only: :docs},
+
+      # Code analysis dependencies
+      {:credo, "~> 0.3", only: [:dev, :test]},
+      {:dialyxir, "~> 0.4", only: [:dev]}
     ]
   end
 end
