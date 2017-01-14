@@ -1,7 +1,8 @@
 defmodule Lye.ClientGenerator do
   @moduledoc false
-  
+
   alias Lye.Client
+  alias Lye.Client.Operation
 
   def generate(wsdl) do
     operations = wsdl.port_type.operations
@@ -11,6 +12,6 @@ defmodule Lye.ClientGenerator do
   end
 
   defp generate_operation(_wsdl, operation) do
-    {operation.name, operation.name}
+    {operation.name, %Operation{name: operation.name, action: operation.action}}
   end
 end
