@@ -3,19 +3,37 @@ defmodule Lye.ClientGeneratorTest do
 
   import Lye.ClientGenerator
 
-  setup_all do
-    article_wsdl = File.read!(Path.join(@fixture_path, "article_service.xml"))
-    measurement_wsdl = File.read!(Path.join(@fixture_path, "measurement_service.xml"))
-    {:ok, %{article: article_wsdl,
-      blz: blz_wsdl,
-      measurement: measurement_wsdl
-    }}
+  alias Lye.Client
+  alias Lye.WSDLParser.{WSDL, Operation, PortType, Service, Port}
+
+  @fixture_path "test/fixtures/wsdl"
+
+  test "generates client for wsdl with one operation" do
+    operations = [%Operation{name: "operation"}]
+    port_type = %PortType{name: "name", operations: operations}
+    service = %Service{port: %Port{address: "http://www.example.com"}}
+    wsdl = %WSDL{port_type: port_type, service: service, tns: "tns"}
+    client = generate(wsdl)
+    expected = %Client{
+      operations: %{"operation" => "operation"},
+      tns: "tns",
+      url: "http://www.example.com"
+    }
+    assert client == expected
   end
 
-  test "generates client for wsdl with one operation", context do
-  end
-
-  test "generates client for wsdl with many operations", context do
+  test "generates client for wsdl with many operations" do
+    operations = [%Operation{name: "operation1"}, %Operation{name: "operation2"}]
+    port_type = %PortType{name: "name", operations: operations}
+    service = %Service{port: %Port{address: "http://www.example.com"}}
+    wsdl = %WSDL{port_type: port_type, service: service, tns: "tns"}
+    client = generate(wsdl)
+    expected = %Client{
+      operations: %{"operation1" => "operation1", "operation2" => "operation2",},
+      tns: "tns",
+      url: "http://www.example.com"
+    }
+    assert client == expected
   end
 
 end
