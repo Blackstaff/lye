@@ -1,8 +1,8 @@
-defmodule Lye.ClientGenerator.EnvelopeTest do
+defmodule Lye.Client.EnvelopeTest do
   use ExUnit.Case, async: true
 
   import SweetXml
-  import Lye.ClientGenerator.Envelope
+  import Lye.Client.Envelope
 
   test "generates envelope for operation" do
     operation = "get_measurements"

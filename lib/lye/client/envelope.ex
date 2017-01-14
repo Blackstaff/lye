@@ -1,4 +1,4 @@
-defmodule Lye.ClientGenerator.Envelope do
+defmodule Lye.Client.Envelope do
   import XmlBuilder
 
   @soap11_env "http://schemas.xmlsoap.org/soap/envelope/"
