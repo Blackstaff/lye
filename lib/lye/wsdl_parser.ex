@@ -133,7 +133,7 @@ defmodule Lye.WSDLParser do
   defp parse_tns({:error, msg}, _), do: {:error, msg}
   defp parse_tns({:ok, wsdl}, raw_desc) do
     tns = raw_desc
-    |> xpath(~x"//wsdl:types/xs:schema/@targetNamespace"s)
+    |> xpath(~x"//wsdl:definitions/@targetNamespace"s)
 
     wsdl
     |> add_to_wsdl({:ok, tns}, :tns)
