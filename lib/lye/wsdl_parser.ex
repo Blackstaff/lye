@@ -76,6 +76,7 @@ defmodule Lye.WSDLParser do
   defp parse_binding({:ok, wsdl}, raw_desc) do
     check = fn
       (binding = %Binding{style: "document"}) -> {:ok, binding}
+      (binding = %Binding{style: ""}) -> {:ok, binding}
       (%Binding{style: style}) -> {:error, "Binding style not supported: #{style}"}
     end
 
