@@ -2,6 +2,7 @@ defmodule Lye.Client do
   @moduledoc false
 
   alias Lye.Client.Envelope
+  alias Lye.Client.Response
 
   defstruct [operations: %{}, url: nil, tns: nil]
 
@@ -10,6 +11,14 @@ defmodule Lye.Client do
     body = parameters
     |> Envelope.envelope(operation.name, client.tns)
     headers = [{"Content-Type", "text/xml; charset=utf-8"}, {"SOAPAction", operation.action}]
-    HTTPoison.post(client.url, body, headers)
+    client.url
+    |> HTTPoison.post(body, headers)
+    |> parse_response()
   end
+
+  defp parse_response({:error, msg}), do: {:error, msg}
+  defp parse_response({:ok, %{body: response, status_code: status}})
+    when div(status, 100) == 2, do: {:ok, response |> Response.parse()}
+  defp parse_response({:ok, %{body: response}}),
+    do: {:error, response}
 end

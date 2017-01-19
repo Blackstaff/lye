@@ -14,7 +14,8 @@ defmodule Lye.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :sweet_xml, :xml_builder, :httpoison],
+    [applications: [:logger, :sweet_xml, :elixir_xml_to_map, :xml_builder,
+      :httpoison, :iteraptor],
      mod: {Lye, []}]
   end
 
@@ -30,8 +31,10 @@ defmodule Lye.Mixfile do
   defp deps do
     [
       {:sweet_xml, "~> 0.6.2"},
+      {:elixir_xml_to_map, "~> 0.1.1"},
       {:xml_builder, "~> 0.0.8"},
       {:httpoison, "~> 0.11"},
+      {:iteraptor, "~> 0.7.0"},
 
       # Docs dependencies
       {:ex_doc, "~> 0.14", only: :docs},
